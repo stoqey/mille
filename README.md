@@ -1,8 +1,6 @@
 ## Richard Millie ⌚︎⌚︎⌚︎
 #### The market is always open anytime
 
-![](docs/night-day.jpg)
-
 Millie is a day trading tool used to stream market data slowly just as it would when the market is open.
 
 ### Problem

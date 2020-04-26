@@ -5,3 +5,5 @@ node_modules/
 
 # production server output
 build
+
+.env

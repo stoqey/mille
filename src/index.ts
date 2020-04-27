@@ -17,7 +17,7 @@ interface IndexedData {
 };
 
 export async function millie(args?: Start) {
-    const { startDate = new Date("2020-03-13 09:30:00"), endDate = new Date("2020-03-13 17:30:00"), symbols = ["NFLX"] } = args || {};
+    const { startDate = new Date("2020-03-13 09:30:00"), symbols = ["NFLX"] } = args || {};
 
     const finnHubApi = new FinnhubAPI(FINNHUB_KEY);
 
@@ -61,24 +61,25 @@ export async function millie(args?: Start) {
     });
 
     // @ts-ignore
-    console.log(market.NFLX);
+    // console.log(market.NFLX);
 
-
-
-
+    let startingTime: Date = new Date(startDate);
     /**
      * Start loop
      */
-    // function seconds() {
+    function seconds() {
 
-    //     // Get symbols market data, 
-    //     // Check all symbols market data if exit
-    //     // Emit all that exist
-    //     // 
-    //     console.log('second is ');
-    // }
+        // Get symbols market data, 
+        // Check all symbols market data if exit
+        // Emit all that exist
+        // 
+        startingTime = new Date(startingTime.setSeconds(startingTime.getSeconds() + 1));
 
-    // setInterval(seconds, 1000);
+
+        console.log('second is ', startingTime + '');
+    }
+
+    setInterval(seconds, 1000);
 }
 
 millie();

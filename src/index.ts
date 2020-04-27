@@ -1,14 +1,14 @@
 import FinnhubAPI, { MarketDataItem } from '@stoqey/finnhub';
 import { FINNHUB_KEY } from './config';
+import { MilleEvents, MILLEEVENTS } from './MilleEvents';
+
+// Export mille events
+export * from './MilleEvents';
+
 interface Start {
     startDate: Date;
     endDate: Date;
     symbols: [string]
-}
-
-interface SymbolData {
-    symbol: string;
-    marketData: MarketDataItem[]
 }
 
 interface IndexedData {
@@ -16,10 +16,19 @@ interface IndexedData {
     data: { [x: string]: MarketDataItem };
 };
 
+/**
+ * mille
+ * {
+ *   @param startDate 
+ *   @param symbols
+ * } 
+ */
 export async function mille(args?: Start) {
     const { startDate = new Date("2020-03-13 09:30:00"), symbols = ["NFLX"] } = args || {};
 
     const finnHubApi = new FinnhubAPI(FINNHUB_KEY);
+
+    const milleEvents = MilleEvents.Instance;
 
     let market: IndexedData = {} as any;
 
@@ -75,14 +84,22 @@ export async function mille(args?: Start) {
             const matchingTime = symbolData[matchedDateStr];
 
             if (matchingTime) {
-                matched.push({
+                const dataToSend = {
                     symbol: key,
                     tick: matchingTime
-                });
+                }
+
+                // Add data to matched
+                matched.push(dataToSend);
+
+                // Emit to all listens
+                milleEvents.emit(`${MILLEEVENTS.DATA}-${key}`, dataToSend); // direct event
+                milleEvents.emit(`${MILLEEVENTS.DATA}`, dataToSend); // All general
             };
 
         });
 
+        // Print all matched symbols
         console.log('matched time is', matched);
     }
 
@@ -95,7 +112,7 @@ export async function mille(args?: Start) {
         // Increase time by 1 sec
         startingTime = new Date(startingTime.setSeconds(startingTime.getSeconds() + 1));
 
-        // Match
+        // Run Matcher
         // Emit all that exist
         matchTimeData(startingTime);
     }
@@ -103,6 +120,6 @@ export async function mille(args?: Start) {
     setInterval(seconds, 1000);
 }
 
-mille();
+export default mille;
 
 

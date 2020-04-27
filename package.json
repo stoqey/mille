@@ -8,15 +8,19 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "build": "rm -rf build && tsc"
   },
   "devDependencies": {
+    "@types/dotenv": "^8.2.0",
     "@types/lodash": "^4.14.150",
+    "@types/node": "^13.13.4",
     "nodemon": "^2.0.3",
     "ts-node": "^8.9.1",
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "@stoqey/finnhub": "^0.0.3",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.15"
   }

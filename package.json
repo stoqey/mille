@@ -1,9 +1,9 @@
 {
-  "name": "millie",
+  "name": "mille",
   "version": "0.0.1",
   "description": "The market is always open anytime",
   "main": "index.js",
-  "repository": "git@github.com:stoqey/millie.git",
+  "repository": "git@github.com:stoqey/mille.git",
   "author": "Stoqey <support@stoqey.com>",
   "license": "MIT",
   "private": false,

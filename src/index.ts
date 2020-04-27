@@ -16,13 +16,14 @@ interface IndexedData {
     data: { [x: string]: MarketDataItem };
 };
 
-export async function millie(args?: Start) {
+export async function mille(args?: Start) {
     const { startDate = new Date("2020-03-13 09:30:00"), symbols = ["NFLX"] } = args || {};
 
     const finnHubApi = new FinnhubAPI(FINNHUB_KEY);
 
     let market: IndexedData = {} as any;
 
+    // 1. Get symbols market data, 
     const fetchMarketData: { symbol: string, data: MarketDataItem[] }[] = await Promise.all(symbols.map(
         symbol => new Promise((resolve, reject) => {
             async function getData() {
@@ -63,25 +64,45 @@ export async function millie(args?: Start) {
     // @ts-ignore
     // console.log(market.NFLX);
 
+    const matchTimeData = (matchedDate: Date) => {
+        const matched = [];
+        const matchedDateStr = `${matchedDate.getTime()}`;
+
+        Object.keys(market).map(key => {
+
+            const symbolData = market[key].data;
+
+            const matchingTime = symbolData[matchedDateStr];
+
+            if (matchingTime) {
+                matched.push({
+                    symbol: key,
+                    tick: matchingTime
+                });
+            };
+
+        });
+
+        console.log('matched time is', matched);
+    }
+
     let startingTime: Date = new Date(startDate);
     /**
      * Start loop
      */
     function seconds() {
 
-        // Get symbols market data, 
-        // Check all symbols market data if exit
-        // Emit all that exist
-        // 
+        // Increase time by 1 sec
         startingTime = new Date(startingTime.setSeconds(startingTime.getSeconds() + 1));
 
-
-        console.log('second is ', startingTime + '');
+        // Match
+        // Emit all that exist
+        matchTimeData(startingTime);
     }
 
     setInterval(seconds, 1000);
 }
 
-millie();
+mille();
 
 

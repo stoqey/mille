@@ -36,5 +36,3 @@ Crypto:
   - Binance
 
  `[ insert your favorite broker]`....
-
-![](docs/night-day.jpg)

@@ -1,12 +1,13 @@
 {
-  "name": "mille",
-  "version": "0.0.1",
+  "name": "@stoqey/mille",
+  "version": "0.0.2",
   "description": "The market is always open anytime",
-  "main": "index.js",
   "repository": "git@github.com:stoqey/mille.git",
   "author": "Stoqey <support@stoqey.com>",
   "license": "MIT",
   "private": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "dev": "nodemon src/dev.ts",
     "build": "rm -rf build && tsc"

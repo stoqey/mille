@@ -45,7 +45,7 @@ export async function mille(args?: Start) {
                 async function getData() {
                     const data = await finnHubApi.getTick(symbol, startDate);
 
-                    log(`${MILLEEVENTS.GET_DATA}`, symbol);
+                    log(`finnHubApi ${MILLEEVENTS.GET_DATA} => `, symbol);
 
                     return resolve({
                         data,

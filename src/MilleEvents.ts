@@ -6,7 +6,6 @@ export enum MILLEEVENTS {
 }
 
 export class MilleEvents extends EventEmitter.EventEmitter {
-    private cache = {};
     private static _instance: MilleEvents;
 
     public static get Instance() {

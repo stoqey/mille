@@ -2,6 +2,7 @@ import EventEmitter from 'events';
 
 export enum MILLEEVENTS {
     DATA = 'data',
+    GET_DATA = 'get_data'
 }
 
 export class MilleEvents extends EventEmitter.EventEmitter {

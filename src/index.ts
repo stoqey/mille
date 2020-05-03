@@ -7,6 +7,7 @@ export * from './MilleEvents';
 
 interface Start {
     date: Date;
+    debug?: boolean
 }
 
 interface IndexedData {
@@ -22,7 +23,11 @@ interface IndexedData {
  * } 
  */
 export async function mille(args?: Start) {
-    const { date: startDate = new Date("2020-03-13 09:30:00") } = args || {};
+    const { date: startDate = new Date("2020-03-13 09:30:00"), debug = false } = args || {};
+
+    const log = (tag, data) => {
+        debug ? console.log(tag, data) : null;
+    };
 
     const finnHubApi = new FinnhubAPI(FINNHUB_KEY);
 
@@ -32,11 +37,16 @@ export async function mille(args?: Start) {
 
 
     milleEvents.on(MILLEEVENTS.GET_DATA, async (symbols) => {
+
+        log(MILLEEVENTS.GET_DATA, symbols)
         // 1. Get symbols market data, 
         const fetchMarketData: { symbol: string, data: MarketDataItem[] }[] = await Promise.all(symbols.map(
             symbol => new Promise((resolve, reject) => {
                 async function getData() {
                     const data = await finnHubApi.getTick(symbol, startDate);
+
+                    log(`${MILLEEVENTS.GET_DATA}`, symbol);
+
                     return resolve({
                         data,
                         symbol
@@ -100,7 +110,7 @@ export async function mille(args?: Start) {
         });
 
         // Print all matched symbols
-        console.log('matched time is', matched);
+        log('matched time is', matched);
     }
 
     let startingTime: Date = new Date(startDate);
@@ -118,6 +128,8 @@ export async function mille(args?: Start) {
     }
 
     setInterval(seconds, 1000);
+
+    console.log('mille init')
 }
 
 export default mille;

@@ -6,9 +6,7 @@ import { MilleEvents, MILLEEVENTS } from './MilleEvents';
 export * from './MilleEvents';
 
 interface Start {
-    startDate: Date;
-    endDate: Date;
-    symbols: [string]
+    date: Date;
 }
 
 interface IndexedData {
@@ -24,7 +22,7 @@ interface IndexedData {
  * } 
  */
 export async function mille(args?: Start) {
-    const { startDate = new Date("2020-03-13 09:30:00") } = args || {};
+    const { date: startDate = new Date("2020-03-13 09:30:00") } = args || {};
 
     const finnHubApi = new FinnhubAPI(FINNHUB_KEY);
 

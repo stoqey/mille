@@ -81,7 +81,6 @@ export async function mille(args?: Start) {
 
 
     // @ts-ignore
-    // console.log(market.NFLX);
 
     const matchTimeData = (matchedDate: Date) => {
         const matched = [];

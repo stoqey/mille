@@ -1,6 +1,6 @@
 import FinnhubAPI, { MarketDataItem } from '@stoqey/finnhub';
 import { FINNHUB_KEY } from './config';
-import { log } from './log';
+import { log, verbose } from './log';
 import { MilleEvents, MILLEEVENTS } from './MilleEvents';
 
 // Export mille events
@@ -41,7 +41,7 @@ export async function mille(args?: Start) {
                 async function getData() {
                     const data = await finnHubApi.getTick(symbol, startDate);
 
-                    log(`finnHubApi ${MILLEEVENTS.GET_DATA} => `, symbol);
+                    log(`finnHubApi ${MILLEEVENTS.GET_DATA} => `, `symbol${symbol} market data=${data && data.length}`);
 
                     return resolve({
                         data,
@@ -82,13 +82,18 @@ export async function mille(args?: Start) {
         const matched = [];
         const matchedDateStr = `${matchedDate.getTime()}`;
 
+        verbose(`stats = ${JSON.stringify(Object.keys(market))}`);
+
         Object.keys(market).map(key => {
 
+
             const symbolData = market[key].data;
+            // verbose(`stats > ${key} stats = ${Object.keys(symbolData || {}).length}`);
 
             const matchingTime = symbolData[matchedDateStr];
 
             if (matchingTime) {
+
                 const dataToSend = {
                     symbol: key,
                     tick: matchingTime
@@ -114,6 +119,8 @@ export async function mille(args?: Start) {
      */
     function seconds() {
 
+        log(`⌚️⌚️⌚️--${startingTime} --⌚️⌚️⌚️`)
+        startingTime
         // Increase time by 1 sec
         startingTime = new Date(startingTime.setSeconds(startingTime.getSeconds() + 1));
 

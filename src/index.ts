@@ -1,5 +1,6 @@
 import FinnhubAPI, { MarketDataItem } from '@stoqey/finnhub';
 import { FINNHUB_KEY } from './config';
+import { log } from './log';
 import { MilleEvents, MILLEEVENTS } from './MilleEvents';
 
 // Export mille events
@@ -24,11 +25,6 @@ interface IndexedData {
  */
 export async function mille(args?: Start) {
     const { date: startDate = new Date("2020-03-13 09:30:00"), debug = false } = args || {};
-
-    const log = (tag, data) => {
-        debug ? console.log(tag, data) : null;
-    };
-
     const finnHubApi = new FinnhubAPI(FINNHUB_KEY);
 
     const milleEvents = MilleEvents.Instance;
@@ -128,7 +124,7 @@ export async function mille(args?: Start) {
 
     setInterval(seconds, 1000);
 
-    console.log('mille init')
+    log('--------------- Mille started ------------')
 }
 
 export default mille;

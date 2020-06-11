@@ -2,7 +2,17 @@ import EventEmitter from 'events';
 
 export enum MILLEEVENTS {
     DATA = 'data',
-    GET_DATA = 'get_data'
+
+    /**
+     * [string]
+     */
+    GET_DATA = 'get_data',
+
+    /**
+     * { symbols: string[], time: Date }
+     */
+    TIME_TICK = 'time_tick',
+
 }
 
 export class MilleEvents extends EventEmitter.EventEmitter {

@@ -8,7 +8,8 @@ export * from './MilleEvents';
 
 interface Start {
     date: Date;
-    debug?: boolean
+    debug?: boolean;
+    mode: 'sec' | 'min' | ' 1 hour';
 }
 
 interface IndexedData {
@@ -21,10 +22,11 @@ interface IndexedData {
  * {
  *   @param startDate 
  *   @param symbols
+ *   @param mode sec | min | 10 min | 1 hour
  * } 
  */
 export async function mille(args?: Start) {
-    const { date: startDate = new Date("2020-03-13 09:30:00"), debug = false } = args || {};
+    const { date: startDate = new Date("2020-03-13 09:30:00"), debug = false, mode, } = args || {};
     const finnHubApi = new FinnhubAPI(FINNHUB_KEY);
 
     const milleEvents = MilleEvents.Instance;
@@ -61,6 +63,7 @@ export async function mille(args?: Start) {
             mkdata.forEach(dItem => {
                 const dItemDate = new Date(dItem.date);
 
+                // TODO set hours, mins
                 const dateWithoutMillieseconds = dItemDate.setMilliseconds(0);
 
                 // set data to index
@@ -119,14 +122,14 @@ export async function mille(args?: Start) {
      */
     function seconds() {
 
-        log(`⌚️⌚️⌚️--${startingTime} --⌚️⌚️⌚️`)
-        startingTime
+        verbose(`⌚️⌚️⌚️--${startingTime} --⌚️⌚️⌚️`)
         // Increase time by 1 sec
         startingTime = new Date(startingTime.setSeconds(startingTime.getSeconds() + 1));
 
         // Run Matcher
         // Emit all that exist
         matchTimeData(startingTime);
+        milleEvents.emit(MILLEEVENTS.TIME_TICK, { time: startingTime, symbols: Object.keys(market) })
     }
 
     setInterval(seconds, 1000);

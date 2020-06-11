@@ -9,7 +9,7 @@ export * from './MilleEvents';
 interface Start {
     date: Date;
     debug?: boolean;
-    mode: 'sec' | 'min' | ' 1 hour';
+    mode?: 'sec' | 'min' | ' 1 hour';
 }
 
 interface IndexedData {
@@ -26,7 +26,7 @@ interface IndexedData {
  * } 
  */
 export async function mille(args?: Start) {
-    const { date: startDate = new Date("2020-03-13 09:30:00"), debug = false, mode, } = args || {};
+    const { date: startDate = new Date("2020-03-13 09:30:00"), debug = false, mode } = args || {};
     const finnHubApi = new FinnhubAPI(FINNHUB_KEY);
 
     const milleEvents = MilleEvents.Instance;

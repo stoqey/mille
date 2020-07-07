@@ -13,7 +13,6 @@ export type TimeMode = 'secs' | 'mins' | 'hours';
 interface Start {
     startDate: Date;
     endDate?: Date;
-    date: Date;
     mode: TimeMode;
     debug?: boolean;
 }
@@ -31,7 +30,7 @@ interface IndexedData {
  *   @param mode sec | min | 10 min | 1 hour
  * } 
  */
-export async function mille(args?: Start) {
+export async function mille(args: Start): Promise<void> {
     const { startDate = new Date("2020-03-13 09:35:00"), debug = false, mode = 'secs', endDate = null } = args || {};
     const finnHubApi = new FinnhubAPI(FINNHUB_KEY);
 
@@ -176,7 +175,6 @@ export async function mille(args?: Start) {
 
         let matchedDateStr: string = `${matchedDate.getTime()}`;
 
-        // TODO check mode used
         switch (mode) {
             case 'hours':
                 matchedDateStr = timeFormatWithHours(matchedDate);
@@ -186,8 +184,6 @@ export async function mille(args?: Start) {
             default:
                 matchedDateStr = `${matchedDate.getTime()}`;
         };
-
-
 
         verbose(`stats = ${JSON.stringify(Object.keys(market))}`);
 
@@ -281,8 +277,7 @@ export async function mille(args?: Start) {
 
     setInterval(functionToRun, 1000);
 
-    log('--------------- Mille started -------------');
-
+    return log('--------------- Mille started -------------');
 }
 
 export default mille;

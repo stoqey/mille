@@ -2,6 +2,7 @@ import FinnhubAPI, { MarketDataItem } from '@stoqey/finnhub';
 import { FINNHUB_KEY } from './config';
 import { log, verbose } from './log';
 import { MilleEvents, MILLEEVENTS } from './MilleEvents';
+import { getTimeDiff } from './utils/time.utils';
 
 // Export mille events
 export * from './MilleEvents';
@@ -29,7 +30,7 @@ interface IndexedData {
  * } 
  */
 export async function mille(args?: Start) {
-    const { date: startDate = new Date("2020-03-13 09:35:00"), debug = false, mode = 'secs', endDate = null } = args || {};
+    const { startDate = new Date("2020-03-13 09:35:00"), debug = false, mode = 'secs', endDate = null } = args || {};
     const finnHubApi = new FinnhubAPI(FINNHUB_KEY);
 
     const milleEvents = MilleEvents.Instance;
@@ -51,7 +52,18 @@ export async function mille(args?: Start) {
         const fetchMarketData: { symbol: string, data: MarketDataItem[] }[] = await Promise.all(symbols.map(
             symbol => new Promise((resolve, reject) => {
                 async function getData() {
-                    const data = await finnHubApi.getTick(symbol, startDate);
+                    let data = [];
+                    const daysDif = getTimeDiff(startDate, endDate || startDate, 'days');
+                    // Check if we have endDate
+                    if (endDate && daysDif > 1) {
+                        // Fetch candles instead
+                        // And mode must not be seconds
+                        data = await finnHubApi.getCandles(symbol, startDate, endDate, '1');
+                    }
+                    else {
+                        // only one day so just get tick data
+                        data = await finnHubApi.getTick(symbol, startDate);
+                    }
 
                     log(`finnHubApi MILLEEVENTS.GET_DATA => `, `symbol=${symbol} marketData=${data && data.length}`);
 

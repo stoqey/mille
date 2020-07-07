@@ -39,6 +39,18 @@ export async function mille(args?: Start) {
 
     let market: IndexedData = {} as any;
 
+    /*** TIME UTILS */
+    const timeFormatWithMinutes = (date: Date): string => {
+        const timeFormatted = moment(date).format('YYYYMMDD HH:mm');
+        return timeFormatted;
+    }
+
+    const timeFormatWithHours = (date: Date): string => {
+        const timeFormatted = moment(date).format('YYYYMMDD HH');
+        return timeFormatted;
+    }
+    /*** TIME UTILS */
+
 
     // Get market data
     milleEvents.on(MILLEEVENTS.GET_DATA, async (symbols) => {
@@ -128,18 +140,6 @@ export async function mille(args?: Start) {
         )) as any;
 
 
-        /*** TIME UTILS */
-        const timeFormatWithMinutes = (date: Date): string => {
-            const timeFormatted = moment(date).format('YYYYMMDD HH:mm');
-            return timeFormatted;
-        }
-
-        const timeFormatWithHours = (date: Date): string => {
-            const timeFormatted = moment(date).format('YYYYMMDD HH');
-            return timeFormatted;
-        }
-        /*** TIME UTILS */
-
         fetchingMarketData.forEach(dataSymbol => {
             const { data: mkdata, symbol: curSymbol } = dataSymbol;
 
@@ -173,7 +173,21 @@ export async function mille(args?: Start) {
     // TODO get market data from exodus
     const matchTimeData = (matchedDate: Date) => {
         const matched = [];
-        const matchedDateStr = `${matchedDate.getTime()}`;
+
+        let matchedDateStr: string = `${matchedDate.getTime()}`;
+
+        // TODO check mode used
+        switch (mode) {
+            case 'hours':
+                matchedDateStr = timeFormatWithHours(matchedDate);
+            case 'mins':
+                matchedDateStr = timeFormatWithMinutes(matchedDate);
+            case 'secs':
+            default:
+                matchedDateStr = `${matchedDate.getTime()}`;
+        };
+
+
 
         verbose(`stats = ${JSON.stringify(Object.keys(market))}`);
 

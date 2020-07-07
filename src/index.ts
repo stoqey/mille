@@ -8,6 +8,8 @@ export * from './MilleEvents';
 
 export type TimeMode = 'secs' | 'mins' | 'hours';
 interface Start {
+    startDate: Date;
+    endDate?: Date;
     date: Date;
     mode: TimeMode;
     debug?: boolean;
@@ -27,7 +29,7 @@ interface IndexedData {
  * } 
  */
 export async function mille(args?: Start) {
-    const { date: startDate = new Date("2020-03-13 09:35:00"), debug = false, mode = 'secs' } = args || {};
+    const { date: startDate = new Date("2020-03-13 09:35:00"), debug = false, mode = 'secs', endDate = null } = args || {};
     const finnHubApi = new FinnhubAPI(FINNHUB_KEY);
 
     const milleEvents = MilleEvents.Instance;
@@ -51,7 +53,7 @@ export async function mille(args?: Start) {
                 async function getData() {
                     const data = await finnHubApi.getTick(symbol, startDate);
 
-                    log(`finnHubApi ${MILLEEVENTS.GET_DATA} => `, `symbol${symbol} market data=${data && data.length}`);
+                    log(`finnHubApi MILLEEVENTS.GET_DATA => `, `symbol=${symbol} marketData=${data && data.length}`);
 
                     return resolve({
                         data,

@@ -3,6 +3,7 @@ import { FINNHUB_KEY } from './config';
 import { log, verbose } from './log';
 import { MilleEvents, MILLEEVENTS } from './MilleEvents';
 import { getTimeDiff } from './utils/time.utils';
+import { sendDataToMarketDataServer, fetchMarketData, GroupBy } from './utils/marketDataServer';
 
 // Export mille events
 export * from './MilleEvents';
@@ -54,12 +55,55 @@ export async function mille(args?: Start) {
             data: MarketDataItem[]
         };
 
-        const fetchMarketData: FetchedData[] = await Promise.all(symbols.map(
+        const fetchingMarketData: FetchedData[] = await Promise.all(symbols.map(
             symbol => new Promise((resolve, reject) => {
-                async function syncWithMarketDataServer() {
 
-                }
-                async function getData() {
+                async function syncWithMarketDataServer(marketData: MarketDataItem[], symbol: string) {
+                    try {
+
+                        // send data to marketdata server
+                        await sendDataToMarketDataServer(marketData.map((i) => ({ ...i, symbol })));
+
+                        setTimeout(() => {
+
+                            // fetch data from exodus
+                            async function getFinalMarketData() {
+
+                                // check mode
+                                let range: GroupBy = "1m";
+
+                                // TODO add more days, months, weeks e.t.c
+                                switch (mode) {
+                                    case 'hours':
+                                        range = '1h';
+                                    case 'mins':
+                                    default:
+                                        range = '1m';
+                                }
+
+                                const data = await fetchMarketData({
+                                    endDate,
+                                    startDate,
+                                    symbol,
+                                    range
+                                });
+
+                                // return the data here
+                                return resolve({
+                                    data,
+                                    symbol
+                                })
+                            }
+                            getFinalMarketData();
+
+                        }, 2000);
+                    }
+                    catch (error) {
+                        console.log('failed to sync with mill', error)
+                    }
+                };
+
+                async function getDataFromProvider() {
                     let data = [];
                     const daysDif = getTimeDiff(startDate, endDate || startDate, 'days');
                     // Check if we have endDate
@@ -76,16 +120,13 @@ export async function mille(args?: Start) {
                     log(`finnHubApi MILLEEVENTS.GET_DATA => `, `symbol=${symbol} marketData=${data && data.length}`);
 
                     // We have market data now
-                    return resolve({
-                        data,
-                        symbol
-                    })
+                    await syncWithMarketDataServer(data, symbol);
                 };
-                getData();
+                getDataFromProvider();
             })
         )) as any;
 
-        fetchMarketData.forEach(dataSymbol => {
+        fetchingMarketData.forEach(dataSymbol => {
             const { data: mkdata, symbol: curSymbol } = dataSymbol;
 
             const indexedData = {};

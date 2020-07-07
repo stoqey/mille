@@ -1,4 +1,5 @@
 import FinnhubAPI, { MarketDataItem } from '@stoqey/finnhub';
+import moment from 'moment';
 import { FINNHUB_KEY } from './config';
 import { log, verbose } from './log';
 import { MilleEvents, MILLEEVENTS } from './MilleEvents';
@@ -126,6 +127,19 @@ export async function mille(args?: Start) {
             })
         )) as any;
 
+
+        /*** TIME UTILS */
+        const timeFormatWithMinutes = (date: Date): string => {
+            const timeFormatted = moment(date).format('YYYYMMDD HH:mm');
+            return timeFormatted;
+        }
+
+        const timeFormatWithHours = (date: Date): string => {
+            const timeFormatted = moment(date).format('YYYYMMDD HH');
+            return timeFormatted;
+        }
+        /*** TIME UTILS */
+
         fetchingMarketData.forEach(dataSymbol => {
             const { data: mkdata, symbol: curSymbol } = dataSymbol;
 
@@ -135,11 +149,17 @@ export async function mille(args?: Start) {
             mkdata.forEach(dItem => {
                 const dItemDate = new Date(dItem.date);
 
-                // TODO set hours, mins
-                const dateWithoutMillieseconds = dItemDate.setMilliseconds(0);
+                switch (mode) {
+                    case 'hours':
+                        indexedData[`${timeFormatWithHours(dItemDate)}`] = dItem;
+                    case 'mins':
+                        indexedData[`${timeFormatWithMinutes(dItemDate)}`] = dItem;
+                    case 'secs':
+                    default:
+                        const dateWithoutMillieseconds = dItemDate.setMilliseconds(0);
+                        indexedData[`${dateWithoutMillieseconds}`] = dItem;
+                }
 
-                // set data to index
-                indexedData[`${dateWithoutMillieseconds}`] = dItem;
             });
 
             // 2. Add indexed data to market

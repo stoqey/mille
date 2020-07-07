@@ -49,8 +49,16 @@ export async function mille(args?: Start) {
         // Get marketdata or ticks from finnhub
         // 
         // 1. Get symbols market data, 
-        const fetchMarketData: { symbol: string, data: MarketDataItem[] }[] = await Promise.all(symbols.map(
+        interface FetchedData {
+            symbol: string,
+            data: MarketDataItem[]
+        };
+
+        const fetchMarketData: FetchedData[] = await Promise.all(symbols.map(
             symbol => new Promise((resolve, reject) => {
+                async function syncWithMarketDataServer() {
+
+                }
                 async function getData() {
                     let data = [];
                     const daysDif = getTimeDiff(startDate, endDate || startDate, 'days');
@@ -67,6 +75,7 @@ export async function mille(args?: Start) {
 
                     log(`finnHubApi MILLEEVENTS.GET_DATA => `, `symbol=${symbol} marketData=${data && data.length}`);
 
+                    // We have market data now
                     return resolve({
                         data,
                         symbol

@@ -6,10 +6,11 @@ import { MilleEvents, MILLEEVENTS } from './MilleEvents';
 // Export mille events
 export * from './MilleEvents';
 
+export type TimeMode = 'secs' | 'mins' | 'hours';
 interface Start {
     date: Date;
+    mode: TimeMode;
     debug?: boolean;
-    mode?: 'sec' | 'min' | ' 1 hour';
 }
 
 interface IndexedData {
@@ -26,7 +27,7 @@ interface IndexedData {
  * } 
  */
 export async function mille(args?: Start) {
-    const { date: startDate = new Date("2020-03-13 09:30:00"), debug = false, mode } = args || {};
+    const { date: startDate = new Date("2020-03-13 09:35:00"), debug = false, mode = 'secs' } = args || {};
     const finnHubApi = new FinnhubAPI(FINNHUB_KEY);
 
     const milleEvents = MilleEvents.Instance;
@@ -34,9 +35,16 @@ export async function mille(args?: Start) {
     let market: IndexedData = {} as any;
 
 
+    // Get market data
     milleEvents.on(MILLEEVENTS.GET_DATA, async (symbols) => {
 
         log(MILLEEVENTS.GET_DATA, symbols)
+
+        // TODO
+        // Check difference in days,
+        // Check if mode supports it
+        // Get marketdata or ticks from finnhub
+        // 
         // 1. Get symbols market data, 
         const fetchMarketData: { symbol: string, data: MarketDataItem[] }[] = await Promise.all(symbols.map(
             symbol => new Promise((resolve, reject) => {
@@ -78,9 +86,7 @@ export async function mille(args?: Start) {
         });
     })
 
-
-    // @ts-ignore
-
+    // TODO get market data from exodus
     const matchTimeData = (matchedDate: Date) => {
         const matched = [];
         const matchedDateStr = `${matchedDate.getTime()}`;
@@ -88,7 +94,6 @@ export async function mille(args?: Start) {
         verbose(`stats = ${JSON.stringify(Object.keys(market))}`);
 
         Object.keys(market).map(key => {
-
 
             const symbolData = market[key].data;
             // verbose(`stats > ${key} stats = ${Object.keys(symbolData || {}).length}`);
@@ -105,6 +110,7 @@ export async function mille(args?: Start) {
                 // Add data to matched
                 matched.push(dataToSend);
 
+                console.log('dataToSend ---------------------> ', dataToSend)
                 // Emit to all listens
                 milleEvents.emit(`${MILLEEVENTS.DATA}-${key}`, dataToSend); // direct event
                 milleEvents.emit(`${MILLEEVENTS.DATA}`, dataToSend); // All general
@@ -117,8 +123,39 @@ export async function mille(args?: Start) {
     }
 
     let startingTime: Date = new Date(startDate);
+
     /**
-     * Start loop
+     * Start loop for hours
+     */
+    function hours() {
+        verbose(`⌚️⌚️⌚️--${startingTime} --⌚️⌚️⌚️`)
+        // Increase time by 1 sec
+        startingTime = new Date(startingTime.setHours(startingTime.getHours() + 1));
+
+        // Run Matcher
+        // Emit all that exist
+        matchTimeData(startingTime);
+        milleEvents.emit(MILLEEVENTS.TIME_TICK, { time: startingTime, symbols: Object.keys(market) })
+    }
+
+    /**
+     * Start loop for mins
+     */
+    function mins() {
+
+        verbose(`⌚️⌚️⌚️--${startingTime} --⌚️⌚️⌚️`)
+        // Increase time by 1 sec
+        startingTime = new Date(startingTime.setMinutes(startingTime.getMinutes() + 1));
+
+        // Run Matcher
+        // Emit all that exist
+        matchTimeData(startingTime);
+        milleEvents.emit(MILLEEVENTS.TIME_TICK, { time: startingTime, symbols: Object.keys(market) })
+    }
+
+
+    /**
+     * Start loop for seconds
      */
     function seconds() {
 
@@ -132,9 +169,22 @@ export async function mille(args?: Start) {
         milleEvents.emit(MILLEEVENTS.TIME_TICK, { time: startingTime, symbols: Object.keys(market) })
     }
 
-    setInterval(seconds, 1000);
+    let functionToRun = seconds;
 
-    log('--------------- Mille started ------------')
+    switch (mode) {
+        case 'hours':
+            functionToRun = hours;
+        case 'mins':
+            functionToRun = mins;
+        case 'secs':
+        default:
+            functionToRun = seconds;
+    }
+
+    setInterval(functionToRun, 1000);
+
+    log('--------------- Mille started -------------');
+
 }
 
 export default mille;

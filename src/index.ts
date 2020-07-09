@@ -82,15 +82,17 @@ export async function mille(args: Start): Promise<void> {
                             async function getFinalMarketData() {
 
                                 // check mode
-                                let range: GroupBy = "1m";
+                                let range: GroupBy = '10s';
 
                                 // TODO add more days, months, weeks e.t.c
                                 switch (mode) {
                                     case 'hours':
                                         range = '1h';
                                     case 'mins':
-                                    default:
                                         range = '1m';
+                                    case 'secs':
+                                    default:
+                                        range = '10s';
                                 }
 
                                 const data = await fetchMarketData({

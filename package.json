@@ -11,7 +11,8 @@
   "scripts": {
     "dev": "nodemon src/dev.ts",
     "build": "rm -rf build && tsc",
-    "prepare": "yarn build"
+    "prepare": "yarn build",
+    "test": "NODE_ENV=test mocha src/test.ts --exit"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",

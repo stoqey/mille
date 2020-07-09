@@ -116,7 +116,7 @@ export async function mille(args: Start): Promise<void> {
                 };
 
                 async function getDataFromProvider() {
-                    let data = [];
+                    let data: MarketDataItem[] = [];
                     const daysDif = getTimeDiff(startDate, endDate || startDate, 'days');
                     // Check if we have endDate
                     if (endDate && daysDif > 1) {
@@ -126,7 +126,18 @@ export async function mille(args: Start): Promise<void> {
                     }
                     else {
                         // only one day so just get tick data
-                        data = await finnHubApi.getTick(symbol, startDate);
+                        let tickData = await finnHubApi.getTick(symbol, startDate);
+
+                        // convert to MarketDataItem
+                        data = tickData.map(td => ({
+                            close: td.price,
+                            date: td.date,
+                            high: 0,
+                            low: 0,
+                            open: 0,
+                            volume: td.volume
+                        })) as MarketDataItem[];
+
                     }
 
                     log(`finnHubApi MILLEEVENTS.GET_DATA => `, `symbol=${symbol} marketData=${data && data.length}`);
@@ -187,6 +198,8 @@ export async function mille(args: Start): Promise<void> {
 
         verbose(`stats = ${JSON.stringify(Object.keys(market))}`);
 
+
+        // Find matching
         Object.keys(market).map(key => {
 
             const symbolData = market[key].data;

@@ -5,13 +5,15 @@ import { mille, MILLEEVENTS, MilleEvents } from ".";
 const milleEvents = MilleEvents.Instance;
 
 
+const symbol = 'AAPL';
 
 describe('Mille Paper Trading', async () => {
     describe('in secs mode', async () => {
 
         const opt: any = {
-            startDate: new Date("2020-03-13 09:35:00"),
-            endDate: new Date("2020-03-13 16:35:00"),
+            symbol,
+            startDate: new Date("2020-03-11 10:35:00"),
+            endDate: new Date("2020-03-11 16:35:00"),
             mode: 'secs',
         };
 
@@ -20,16 +22,21 @@ describe('Mille Paper Trading', async () => {
             expect(true).to.not.be.false;
         });
 
-        it('should start properly and request for market data and match', async () => {
-            await mille(opt);
+        it('should start properly and request for market data and match', (done) => {
 
-            milleEvents.on(MILLEEVENTS.GET_DATA, async () => {
+            let completed = false;
+            mille(opt);
+
+            milleEvents.on(`${MILLEEVENTS.DATA}-${opt.symbol}`, async () => {
+                console.log('got market data for this item');
+                if (!completed) {
+                    done();
+                    completed = true;
+                }
 
             })
 
-
-            milleEvents.emit(MILLEEVENTS.GET_DATA, ["AAPL", "MSFT"])
-
+            milleEvents.emit(MILLEEVENTS.GET_DATA, [symbol])
 
         });
 

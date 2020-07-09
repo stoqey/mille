@@ -79,7 +79,7 @@ export async function sendDataToMarketDataServer(
         await axios.post(url, params, {
             timeout: 900,
         });
-        log(`successfully sent data to ${serverName}`, params && params.symbol);
+        log(`successfully sent data to ${serverName}`, params && params[0].symbol);
     } catch (error) {
         log(`error sending data to ${serverName}`, error && error.message);
     } finally {

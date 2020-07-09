@@ -17,6 +17,7 @@ describe('Mille Paper Trading', async () => {
     describe('in secs mode', async () => {
 
         it('should start properly', async () => {
+            opt.mode = 'secs';
             await mille(opt);
             expect(true).to.not.be.false;
         });
@@ -24,6 +25,7 @@ describe('Mille Paper Trading', async () => {
         it('should start properly and request for market data and match', (done) => {
 
             let completed = false;
+            opt.mode = 'secs';
             mille(opt);
 
             milleEvents.on(`${MILLEEVENTS.DATA}-${opt.symbol}`, async () => {
@@ -43,9 +45,8 @@ describe('Mille Paper Trading', async () => {
 
     describe('in mins mode', async () => {
 
-        opt.mode = 'mins';
-
         it('should start properly', async () => {
+            opt.mode = 'mins';
             await mille(opt);
             expect(true).to.not.be.false;
         });
@@ -53,6 +54,7 @@ describe('Mille Paper Trading', async () => {
         it('should start properly and request for market data and match', (done) => {
 
             let completed = false;
+            opt.mode = 'mins';
             mille(opt);
 
             milleEvents.on(`${MILLEEVENTS.DATA}-${opt.symbol}`, async () => {
@@ -72,9 +74,8 @@ describe('Mille Paper Trading', async () => {
 
     describe('in hours mode', async () => {
 
-        opt.mode = "hours";
-
         it('should start properly', async () => {
+            opt.mode = "hours";
             await mille(opt);
             expect(true).to.not.be.false;
         });
@@ -82,6 +83,7 @@ describe('Mille Paper Trading', async () => {
         it('should start properly and request for market data and match', (done) => {
 
             let completed = false;
+            opt.mode = "hours";
             mille(opt);
 
             milleEvents.on(`${MILLEEVENTS.DATA}-${opt.symbol}`, async () => {

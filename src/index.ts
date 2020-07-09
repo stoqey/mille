@@ -297,7 +297,7 @@ export async function mille(args: Start): Promise<void> {
 
     setInterval(functionToRun, 1000);
 
-    return log('--------------- Mille started -------------');
+    return log(`--------------- Mille started ${(mode).toLocaleUpperCase()} -------------`);
 }
 
 export default mille;

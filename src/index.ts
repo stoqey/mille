@@ -92,7 +92,7 @@ export async function mille(args: Start): Promise<void> {
                                         range = '1m';
                                     case 'secs':
                                     default:
-                                        range = '10s';
+                                        range = '1s';
                                 }
 
                                 const data = await fetchMarketData({

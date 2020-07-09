@@ -10,7 +10,7 @@ import { sendDataToMarketDataServer, fetchMarketData, GroupBy } from './utils/ma
 export * from './MilleEvents';
 
 export type TimeMode = 'secs' | 'mins' | 'hours';
-interface Start {
+export interface Start {
     startDate: Date;
     endDate?: Date;
     mode: TimeMode;
@@ -79,7 +79,7 @@ export async function mille(args: Start): Promise<void> {
                         setTimeout(() => {
 
                             // fetch data from exodus
-                            async function getFinalMarketData() {
+                            (async function () {
 
                                 // check mode
                                 let range: GroupBy = '10s';
@@ -107,8 +107,7 @@ export async function mille(args: Start): Promise<void> {
                                     data,
                                     symbol
                                 })
-                            }
-                            getFinalMarketData();
+                            })();
 
                         }, 2000);
                     }
@@ -237,8 +236,8 @@ export async function mille(args: Start): Promise<void> {
      * Start loop for hours
      */
     function hours() {
-        verbose(`⌚️⌚️⌚️--${startingTime} --⌚️⌚️⌚️`)
-        // Increase time by 1 sec
+        verbose(`⌚️⌚️⌚️HOURS--${startingTime} --⌚️⌚️⌚️`)
+        // Increase time by 1 hour
         startingTime = new Date(startingTime.setHours(startingTime.getHours() + 1));
 
         // Run Matcher
@@ -252,9 +251,12 @@ export async function mille(args: Start): Promise<void> {
      */
     function mins() {
 
-        verbose(`⌚️⌚️⌚️--${startingTime} --⌚️⌚️⌚️`)
-        // Increase time by 1 sec
+
+        verbose(`⌚️⌚️⌚️MINS--${startingTime} --⌚️⌚️⌚️`)
+
+        // Increase time by 1 min
         startingTime = new Date(startingTime.setMinutes(startingTime.getMinutes() + 1));
+
 
         // Run Matcher
         // Emit all that exist
@@ -268,7 +270,7 @@ export async function mille(args: Start): Promise<void> {
      */
     function seconds() {
 
-        verbose(`⌚️⌚️⌚️--${startingTime} --⌚️⌚️⌚️`)
+        verbose(`⌚️⌚️⌚️SECS--${startingTime} --⌚️⌚️⌚️`)
         // Increase time by 1 sec
         startingTime = new Date(startingTime.setSeconds(startingTime.getSeconds() + 1));
 
@@ -283,11 +285,14 @@ export async function mille(args: Start): Promise<void> {
     switch (mode) {
         case 'hours':
             functionToRun = hours;
+            break;
         case 'mins':
             functionToRun = mins;
+            break;
         case 'secs':
         default:
             functionToRun = seconds;
+            break;
     }
 
     setInterval(functionToRun, 1000);
